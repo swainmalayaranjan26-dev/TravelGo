@@ -1,0 +1,83 @@
+/* ==========================================================================
+   TRAVELGO — MICRO-INTERACTIONS & MOTION SYSTEM
+   ========================================================================== */
+
+/* Infinite Marquee */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Spinner for Pay Button */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tg-spinner {
+  animation: spin 1s linear infinite;
+  width: 20px;
+  height: 20px;
+}
+
+.tg-spinner .path {
+  stroke: #FFFFFF;
+  stroke-linecap: round;
+}
+
+/* Subtle Floating Animation */
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.tg-hero-badge {
+  animation: floatBadge 3.5s ease-in-out infinite;
+}
+
+/* Shimmer Loading Skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.tg-skeleton {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* Entrance Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Pulse Glow for Special Badges */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(20, 184, 166, 0);
+  }
+}
+
+.tg-pulse {
+  animation: pulseGlow 2.5s infinite;
+}

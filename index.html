@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TravelGo — India's Premier Travel & Tourism Platform | Cabs, Trains & Hotels</title>
+  <meta name="description" content="Discover popular Indian destinations and book intercity cabs, Vande Bharat trains, and luxury hotels through a single, unified, beautifully animated web experience." />
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+
+  <!-- Top Navigation & Offer Wrapper (Navbar sits directly below Offer Bar) -->
+  <div class="tg-top-nav-wrapper" id="top-nav-wrapper">
+    <!-- Top Announcement Bar (Synced with Admin Settings) -->
+    <aside class="tg-announcement-bar" id="tg-announcement-bar" style="display: none;">
+      <div class="tg-container tg-announcement-inner">
+        <div class="tg-announcement-content">
+          <span class="tg-announcement-badge">OFFER</span>
+          <span class="tg-announcement-text" id="tg-announcement-text"></span>
+        </div>
+        <a href="#destinations-section" class="tg-announcement-link" id="tg-announcement-link">Claim Offer &rarr;</a>
+      </div>
+    </aside>
+
+    <!-- ==========================================================================
+         HEADER & NAVIGATION BAR (Positioned below Offer section)
+         ========================================================================== -->
+    <header class="tg-header" id="main-header">
+      <div class="tg-container tg-header-inner">
+        <a href="#" class="tg-logo" aria-label="TravelGo Home">
+          <div class="tg-logo-badge">✈️</div>
+          Travel<span>Go</span>
+        </a>
+
+        <nav>
+          <ul class="tg-nav-links">
+            <li><a href="#destinations-section" class="tg-nav-link">Destinations</a></li>
+            <li><a href="#cabs-section" class="tg-nav-link">Cabs</a></li>
+            <li><a href="#trains-section" class="tg-nav-link">Trains</a></li>
+            <li><a href="#hotels-section" class="tg-nav-link">Hotels</a></li>
+            <li><a href="#why-us-section" class="tg-nav-link">Why Us</a></li>
+            <li><a href="#" id="btn-nav-trips" class="tg-nav-link">My Trips</a></li>
+            <li class="tg-mobile-auth-wrapper" id="mobile-auth-wrapper"></li>
+          </ul>
+        </nav>
+
+        <div class="tg-header-actions">
+          <!-- Wishlist Button -->
+          <button type="button" class="tg-icon-btn" id="btn-header-wishlist" title="View Wishlist" aria-label="View Saved Destinations">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            <span class="tg-badge-counter" id="wishlist-counter-badge" style="display: none;">0</span>
+          </button>
+
+          <!-- Admin Panel Switcher -->
+          <a href="admin-login.html" class="tg-admin-link-pill" title="Switch to Admin Panel">
+            <span class="tg-admin-indicator"></span>
+            ⚡ Admin
+          </a>
+
+          <!-- User Authentication / Profile Container -->
+          <div id="header-user-container" class="tg-header-auth-group">
+            <button type="button" id="btn-header-login" class="tg-btn tg-btn-sm tg-btn-outline tg-auth-nav-btn" title="Log In to your account">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                <polyline points="10 17 15 12 10 7"></polyline>
+                <line x1="15" y1="12" x2="3" y2="12"></line>
+              </svg>
+              Log In
+            </button>
+            <button type="button" id="btn-header-register" class="tg-btn tg-btn-sm tg-btn-primary tg-auth-nav-btn" title="Create a new account">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+              </svg>
+              Register
+            </button>
+          </div>
+
+          <!-- Mobile Menu Toggle -->
+          <button type="button" class="tg-mobile-toggle" id="tg-mobile-menu-toggle" aria-label="Toggle navigation menu">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <!-- ==========================================================================
+       HERO SECTION WITH UNIFIED MULTI-SERVICE SEARCH ENGINE
+       ========================================================================== -->
+  <section class="tg-hero" id="hero-section">
+    <div class="tg-hero-bg"></div>
+    <div class="tg-container tg-hero-content">
+      <div class="tg-hero-badge">
+        <span>✨</span> India's Premier 3-in-1 Travel Platform • Cabs • Trains • Hotels
+      </div>
+
+      <h1 class="tg-hero-title">
+        Discover India's Soul, <br />
+        <span class="gradient-text">Booked in One Tap.</span>
+      </h1>
+
+      <p class="tg-hero-sub">
+        Explore golden Goan beaches, misty Manali pine forests, royal Rajasthani havelis, and serene Kerala backwaters with guaranteed best prices and zero booking hassles.
+      </p>
+
+      <!-- Member Loyalty Banner with Direct Login / Register CTA -->
+      <div class="tg-hero-auth-banner" id="hero-auth-banner"></div>
+
+      <!-- Unified Multi-Service Search Container -->
+      <div class="tg-search-wrapper">
+        <div class="tg-search-box">
+          <!-- Service Navigation Tabs -->
+          <div class="tg-search-tabs">
+            <button type="button" class="tg-search-tab-btn active" data-tab="hotels">
+              <span>🏨</span> Hotels & Resorts
+            </button>
+            <button type="button" class="tg-search-tab-btn" data-tab="cabs">
+              <span>🚗</span> Outstation & Local Cabs
+            </button>
+            <button type="button" class="tg-search-tab-btn" data-tab="trains">
+              <span>🚆</span> Vande Bharat & Trains
+            </button>
+            <button type="button" class="tg-search-tab-btn" data-tab="tours">
+              <span>🗺️</span> Holiday Packages
+            </button>
+          </div>
+
+          <!-- Panel 1: Hotels Search -->
+          <div class="tg-search-panel active" id="panel-hotels">
+            <div class="tg-search-row">
+              <div class="tg-search-col">
+                <label>Destination / City</label>
+                <input type="text" id="hotel-search-dest" class="tg-autocomplete-input" placeholder="e.g. Goa, Manali, Jaipur" value="Goa" />
+              </div>
+              <div class="tg-search-col">
+                <label>Check-In Date</label>
+                <input type="date" class="default-tomorrow" />
+              </div>
+              <div class="tg-search-col">
+                <label>Check-Out Date</label>
+                <input type="date" class="default-checkout" />
+              </div>
+              <div class="tg-search-col">
+                <label>Guests & Rooms</label>
+                <select class="tg-select">
+                  <option>2 Adults, 1 Room</option>
+                  <option>1 Adult, 1 Room</option>
+                  <option>2 Adults, 2 Children, 1 Room</option>
+                  <option>4 Adults, 2 Rooms</option>
+                </select>
+              </div>
+              <div class="tg-search-btn-col">
+                <button type="button" id="btn-search-hotels" class="tg-btn tg-btn-primary tg-btn-search">
+                  Search Stays
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 2: Cabs Search -->
+          <div class="tg-search-panel" id="panel-cabs">
+            <div class="tg-search-row">
+              <div class="tg-search-col">
+                <label>Pickup Location</label>
+                <input type="text" id="cab-search-pickup" class="tg-autocomplete-input" placeholder="City, Airport, or Landmark" value="New Delhi Airport T3" />
+              </div>
+              <div class="tg-search-col">
+                <label>Drop Destination</label>
+                <input type="text" id="cab-search-drop" class="tg-autocomplete-input" placeholder="City or Destination" value="Agra (Taj Mahal)" />
+              </div>
+              <div class="tg-search-col">
+                <label>Pickup Date</label>
+                <input type="date" class="default-tomorrow" />
+              </div>
+              <div class="tg-search-col">
+                <label>Pickup Time</label>
+                <select class="tg-select">
+                  <option>06:00 AM</option>
+                  <option selected>08:00 AM</option>
+                  <option>10:00 AM</option>
+                  <option>02:00 PM</option>
+                  <option>06:00 PM</option>
+                  <option>10:00 PM</option>
+                </select>
+              </div>
+              <div class="tg-search-btn-col">
+                <button type="button" id="btn-search-cabs" class="tg-btn tg-btn-primary tg-btn-search">
+                  Find Cabs
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 3: Trains Search -->
+          <div class="tg-search-panel" id="panel-trains">
+            <div class="tg-search-row">
+              <div class="tg-search-col">
+                <label>From Station</label>
+                <input type="text" id="train-search-from" class="tg-autocomplete-input station-input" placeholder="Station name or code" value="New Delhi (NDLS)" />
+              </div>
+              <div class="tg-search-col">
+                <label>To Station</label>
+                <input type="text" id="train-search-to" class="tg-autocomplete-input station-input" placeholder="Station name or code" value="Varanasi Jn (BSB)" />
+              </div>
+              <div class="tg-search-col">
+                <label>Journey Date</label>
+                <input type="date" class="default-tomorrow" />
+              </div>
+              <div class="tg-search-col">
+                <label>Quota & Class</label>
+                <select class="tg-select">
+                  <option>All Classes (General)</option>
+                  <option>AC Chair Car (CC)</option>
+                  <option>AC 3 Tier (3A)</option>
+                  <option>AC 2 Tier (2A)</option>
+                  <option>Exec. Chair Car (EC)</option>
+                  <option>Tatkal Quota</option>
+                </select>
+              </div>
+              <div class="tg-search-btn-col">
+                <button type="button" id="btn-search-trains" class="tg-btn tg-btn-primary tg-btn-search">
+                  Check Trains
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 4: Tours Search -->
+          <div class="tg-search-panel" id="panel-tours">
+            <div class="tg-search-row">
+              <div class="tg-search-col">
+                <label>Destination / Theme</label>
+                <input type="text" id="tour-search-dest" class="tg-autocomplete-input" placeholder="e.g. Kerala, Manali, Ladakh" value="Kerala Backwaters" />
+              </div>
+              <div class="tg-search-col">
+                <label>Duration</label>
+                <select class="tg-select">
+                  <option>Any Duration</option>
+                  <option>Weekend (2-3 Days)</option>
+                  <option>Short Holiday (4-5 Days)</option>
+                  <option>Grand Tour (6+ Days)</option>
+                </select>
+              </div>
+              <div class="tg-search-col">
+                <label>Travel Month</label>
+                <select class="tg-select">
+                  <option>October 2026</option>
+                  <option>November 2026</option>
+                  <option>December 2026</option>
+                  <option>January 2027</option>
+                </select>
+              </div>
+              <div class="tg-search-btn-col">
+                <button type="button" id="btn-search-tours" class="tg-btn tg-btn-primary tg-btn-search">
+                  Explore Tours
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       POPULAR DESTINATIONS DISCOVERY SECTION
+       ========================================================================== -->
+  <section class="tg-section" id="destinations-section">
+    <div class="tg-container">
+      <div class="tg-section-header">
+        <span class="tg-eyebrow">Discover India</span>
+        <h2 class="tg-section-title">Popular Destinations Across India</h2>
+        <p class="tg-section-desc">
+          Curated holiday escapes designed with authentic local experiences, heritage palaces, snow peaks, and pristine beaches.
+        </p>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="tg-categories-bar">
+        <button type="button" class="tg-category-pill active" data-category="all">All Places</button>
+        <button type="button" class="tg-category-pill" data-category="beach">🏖️ Beaches</button>
+        <button type="button" class="tg-category-pill" data-category="hill-station">🏔️ Hill Stations</button>
+        <button type="button" class="tg-category-pill" data-category="heritage">🏰 Royal Heritage</button>
+        <button type="button" class="tg-category-pill" data-category="nature">🌿 Nature & Backwaters</button>
+        <button type="button" class="tg-category-pill" data-category="spiritual">🕉️ Spiritual Ghats</button>
+      </div>
+
+      <!-- Dynamic Destinations Grid -->
+      <div class="tg-destinations-grid" id="destinations-grid">
+        <!-- Rendered by js/booking.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       CABS BOOKING ENGINE & POPULAR ROUTES
+       ========================================================================== -->
+  <section class="tg-section" id="cabs-section" style="background: rgba(11, 19, 43, 0.4);">
+    <div class="tg-container">
+      <div class="tg-section-header">
+        <span class="tg-eyebrow">Intercity & Local Rentals</span>
+        <h2 class="tg-section-title">Book Chauffeur-Driven Cabs</h2>
+        <p class="tg-section-desc">
+          Guaranteed sanitized cars, top-rated commercial drivers, transparent per-km billing, and free cancellation up to 1 hour before pickup.
+        </p>
+      </div>
+
+      <!-- Interactive Distance & Fare Calculator Bar -->
+      <div class="tg-cabs-calculator-bar">
+        <div class="tg-calc-grid">
+          <div class="tg-form-group">
+            <label>Pickup Location</label>
+            <input type="text" id="cab-calc-pickup" class="tg-input" value="Delhi NCR" />
+          </div>
+          <div class="tg-form-group">
+            <label>Drop Destination</label>
+            <input type="text" id="cab-calc-drop" class="tg-input" value="Agra (Taj Mahal)" />
+          </div>
+          <div class="tg-slider-group">
+            <div class="tg-slider-header">
+              <span>Estimated Trip Distance:</span>
+              <strong id="cab-distance-val">210 km</strong>
+            </div>
+            <input type="range" id="cab-calc-distance" class="tg-range-slider" min="30" max="800" value="210" step="10" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Cabs Fleet Grid -->
+      <div class="tg-cabs-grid" id="cabs-cards-grid">
+        <!-- Rendered by js/booking.js -->
+      </div>
+
+      <!-- Popular Highway Routes Section -->
+      <h3 class="tg-routes-subtitle">
+        <span>🛣️</span> Popular Intercity Highway Routes
+      </h3>
+      <div class="tg-routes-grid" id="popular-cab-routes-grid">
+        <!-- Rendered by js/booking.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       TRAINS BOOKING ENGINE (INDIAN RAILWAYS / VANDE BHARAT)
+       ========================================================================== -->
+  <section class="tg-section" id="trains-section">
+    <div class="tg-container">
+      <div class="tg-section-header">
+        <span class="tg-eyebrow">IRCTC Authorized Partner</span>
+        <h2 class="tg-section-title">Fast Vande Bharat & Express Trains</h2>
+        <p class="tg-section-desc">
+          Live seat availability, transparent tatkal quotas, confirmed berth tracking, and instant digital IRCTC PNR generation.
+        </p>
+      </div>
+
+      <!-- Dynamic Trains Cards Grid -->
+      <div class="tg-trains-grid" id="trains-cards-grid">
+        <!-- Rendered by js/booking.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       HOTELS & RESORTS SECTION
+       ========================================================================== -->
+  <section class="tg-section" id="hotels-section" style="background: rgba(11, 19, 43, 0.4);">
+    <div class="tg-container">
+      <div class="tg-section-header">
+        <span class="tg-eyebrow">Handpicked Hospitality</span>
+        <h2 class="tg-section-title">Luxury Resorts & Heritage Stays</h2>
+        <p class="tg-section-desc">
+          Experience world-renowned Indian hospitality — from 5-star beachfront resorts in Goa to century-old Rajput palaces in Jaipur.
+        </p>
+      </div>
+
+      <!-- Hotel Category Pills -->
+      <div class="tg-categories-bar">
+        <button type="button" class="tg-category-pill tg-hotel-filter-pill active" data-filter="all">All Stays</button>
+        <button type="button" class="tg-category-pill tg-hotel-filter-pill" data-filter="luxury">👑 5-Star Luxury</button>
+        <button type="button" class="tg-category-pill tg-hotel-filter-pill" data-filter="heritage">🏰 Heritage Palaces</button>
+        <button type="button" class="tg-category-pill tg-hotel-filter-pill" data-filter="boutique">🌿 Boutique & Nature</button>
+      </div>
+
+      <!-- Dynamic Hotels Grid -->
+      <div class="tg-hotels-grid" id="hotels-cards-grid">
+        <!-- Rendered by js/booking.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       WHY CHOOSE TRAVELGO & PLATFORM HIGHLIGHTS
+       ========================================================================== -->
+  <section class="tg-section" id="why-us-section">
+    <div class="tg-container">
+      <div class="tg-section-header">
+        <span class="tg-eyebrow">The TravelGo Advantage</span>
+        <h2 class="tg-section-title">Why Modern Travelers Choose TravelGo</h2>
+        <p class="tg-section-desc">
+          We eliminate the hassle of switching between 4 different apps for cabs, trains, hotels, and sightseeing.
+        </p>
+      </div>
+
+      <div class="tg-features-grid">
+        <div class="tg-feature-card">
+          <div class="tg-feature-icon">⚡</div>
+          <h3 class="tg-feature-title">Unified 3-in-1 Itinerary</h3>
+          <p class="tg-feature-desc">
+            Book your hotel, outstation chauffeur cab, and train in a single smooth checkout without juggling disparate portals.
+          </p>
+        </div>
+
+        <div class="tg-feature-card">
+          <div class="tg-feature-icon">🛡️</div>
+          <h3 class="tg-feature-title">Zero Hidden Fees</h3>
+          <p class="tg-feature-desc">
+            100% transparent GST and toll fee calculation. 0% transaction surcharges on all UPI and RuPay payments.
+          </p>
+        </div>
+
+        <div class="tg-feature-card">
+          <div class="tg-feature-icon">🎫</div>
+          <h3 class="tg-feature-title">Instant Digital E-Ticket</h3>
+          <p class="tg-feature-desc">
+            Receive printable travel vouchers with verifiable QR codes and WhatsApp booking confirmations immediately.
+          </p>
+        </div>
+
+        <div class="tg-feature-card">
+          <div class="tg-feature-icon">🤝</div>
+          <h3 class="tg-feature-title">24x7 Trip Concierge</h3>
+          <p class="tg-feature-desc">
+            Dedicated human customer support with free cancellation guarantees and instant refunds to your original payment source.
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Numbers / Stats Counter Banner -->
+      <div class="tg-stats-banner">
+        <div class="tg-stat-item">
+          <span class="tg-stat-number" data-target="10000" data-suffix="+">0</span>
+          <span class="tg-stat-label">Happy Journeys Completed</span>
+        </div>
+        <div class="tg-stat-item">
+          <span class="tg-stat-number" data-target="4.9" data-suffix="/5" data-decimals="1">0</span>
+          <span class="tg-stat-label">Average Traveler Rating</span>
+        </div>
+        <div class="tg-stat-item">
+          <span class="tg-stat-number" data-target="120" data-suffix="+">0</span>
+          <span class="tg-stat-label">Indian Cities & Towns Covered</span>
+        </div>
+        <div class="tg-stat-item">
+          <span class="tg-stat-number" data-target="99.8" data-suffix="%" data-decimals="1">0</span>
+          <span class="tg-stat-label">On-Time Cab & Train Reliability</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       TRAVELER TESTIMONIALS MARQUEE
+       ========================================================================== -->
+  <section class="tg-section" style="padding-top: 20px; padding-bottom: 60px;">
+    <div class="tg-container">
+      <div class="tg-section-header">
+        <span class="tg-eyebrow">Real Stories</span>
+        <h2 class="tg-section-title">Loved by Travelers Across India</h2>
+      </div>
+
+      <div class="tg-marquee-wrapper">
+        <div class="tg-marquee-track" id="testimonials-track">
+          <!-- Populated by js/app.js -->
+        </div>
+      </div>
+
+      <!-- Special Offer / Promo Coupon Banner -->
+      <div class="tg-promo-banner-card">
+        <div class="tg-pbc-content">
+          <h3>Unlock Flat 15% OFF on Your First Booking</h3>
+          <p>Valid on all intercity cabs, Vande Bharat train tickets, and luxury holiday resorts.</p>
+        </div>
+        <div class="tg-pbc-code-pill">
+          <div>
+            <small style="display:block; color: var(--text-muted); font-size:0.75rem;">USE PROMO CODE</small>
+            <code>EXPLOREINDIA</code>
+          </div>
+          <button type="button" class="tg-btn tg-btn-sm tg-btn-secondary" onclick="navigator.clipboard.writeText('EXPLOREINDIA'); alert('Coupon code EXPLOREINDIA copied!');">
+            Copy Code
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       FOOTER & NEWSLETTER
+       ========================================================================== -->
+  <footer class="tg-footer">
+    <div class="tg-container">
+      <div class="tg-footer-top">
+        <div class="tg-footer-brand">
+          <a href="#" class="tg-logo">
+            <div class="tg-logo-badge">✈️</div>
+            Travel<span>Go</span>
+          </a>
+          <p>
+            India's unified platform for discovering iconic destinations, booking premium outstation cabs, high-speed trains, and luxury hotel suites.
+          </p>
+          <div class="tg-footer-badges">
+            <span class="tg-fbadge">🛡️ IRCTC Certified</span>
+            <span class="tg-fbadge">🔒 256-Bit SSL</span>
+            <span class="tg-fbadge">🇮🇳 Make in India</span>
+          </div>
+        </div>
+
+        <div class="tg-footer-col">
+          <h5>Top Getaways</h5>
+          <ul class="tg-footer-links">
+            <li><a href="#destinations-section">Goa Beach Resorts</a></li>
+            <li><a href="#destinations-section">Manali Snow Peaks</a></li>
+            <li><a href="#destinations-section">Jaipur Royal Palaces</a></li>
+            <li><a href="#destinations-section">Kerala Houseboats</a></li>
+            <li><a href="#destinations-section">Varanasi Ganga Ghats</a></li>
+          </ul>
+        </div>
+
+        <div class="tg-footer-col">
+          <h5>Services</h5>
+          <ul class="tg-footer-links">
+            <li><a href="#cabs-section">Intercity Outstation Cabs</a></li>
+            <li><a href="#cabs-section">Airport Transfers</a></li>
+            <li><a href="#trains-section">Vande Bharat Express</a></li>
+            <li><a href="#hotels-section">Heritage Haveli Stays</a></li>
+            <li><a href="#why-us-section">Corporate Travel</a></li>
+          </ul>
+        </div>
+
+        <div class="tg-footer-col">
+          <h5>Stay in the Loop</h5>
+          <p class="tg-newsletter-desc">
+            Subscribe to receive secret weekend getaway deals, festival discounts, and train tatkal tips.
+          </p>
+          <form class="tg-newsletter-form" id="tg-newsletter-form">
+            <input type="email" id="newsletter-email" class="tg-input" placeholder="Enter your email" required />
+            <button type="submit" class="tg-btn tg-btn-primary">Join</button>
+          </form>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 14px;">
+            📞 24x7 Traveler Helpline: <strong style="color: var(--teal-300);">1800-266-9090</strong>
+          </p>
+        </div>
+      </div>
+
+      <div class="tg-footer-bottom">
+        <p>&copy; 2026 TravelGo India Pvt. Ltd. All rights reserved. • <a href="admin-login.html" style="color: var(--teal-300); font-weight: 600; text-decoration: none;">⚡ Admin Portal</a></p>
+        <p>Crafted with pride for Indian Travelers • Designed with Modern Web Standards</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MODALS & DRAWERS
+       ========================================================================== -->
+
+  <!-- Destination Details Modal -->
+  <div class="tg-modal" id="destination-modal" role="dialog" aria-modal="true">
+    <div class="tg-modal-box" style="max-width: 960px;">
+      <button type="button" class="tg-modal-close-btn" id="btn-close-dest-modal" aria-label="Close">&times;</button>
+      <div id="destination-modal-body">
+        <!-- Rendered by js/booking.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Unified Checkout & Payment Modal -->
+  <div class="tg-modal" id="checkout-modal" role="dialog" aria-modal="true">
+    <div class="tg-modal-box">
+      <button type="button" class="tg-modal-close-btn" onclick="document.getElementById('checkout-modal').classList.remove('show')" aria-label="Close">&times;</button>
+      <div id="checkout-modal-content">
+        <!-- Rendered by js/payment.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable E-Ticket Voucher Modal -->
+  <div class="tg-modal" id="voucher-modal" role="dialog" aria-modal="true">
+    <div class="tg-modal-box">
+      <button type="button" class="tg-modal-close-btn" onclick="document.getElementById('voucher-modal').classList.remove('show')" aria-label="Close">&times;</button>
+      <div id="voucher-modal-content">
+        <!-- Rendered by js/payment.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Authentication Modal (Login / Sign Up) -->
+  <div class="tg-modal" id="auth-modal" role="dialog" aria-modal="true">
+    <div class="tg-modal-box" style="max-width: 480px;">
+      <button type="button" class="tg-modal-close-btn" id="btn-close-auth-modal" aria-label="Close">&times;</button>
+      <div style="padding: 32px 28px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div class="tg-logo" style="justify-content: center; margin-bottom: 8px;">
+            <div class="tg-logo-badge">✈️</div>
+            Travel<span>Go</span>
+          </div>
+          <h3 id="auth-modal-title" style="font-family: var(--font-heading); font-size: 1.35rem;">Log In to TravelGo</h3>
+          <p id="auth-modal-subtitle" style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">Access your saved trips, member fares, and verified booking tickets</p>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="tg-categories-bar" style="margin-bottom: 20px; display: flex; gap: 8px;">
+          <button type="button" class="tg-category-pill tg-auth-tab active" data-mode="login" style="flex: 1; justify-content: center;">
+            🔑 Log In
+          </button>
+          <button type="button" class="tg-category-pill tg-auth-tab" data-mode="signup" style="flex: 1; justify-content: center;">
+            ✨ Register
+          </button>
+        </div>
+
+        <!-- Auth Error Banner -->
+        <div id="auth-error-msg" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #FCA5A5; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 16px;"></div>
+
+        <form id="tg-auth-form" style="display: flex; flex-direction: column; gap: 14px;">
+          <div class="tg-form-group" id="auth-group-name" style="display: none;">
+            <label class="tg-form-label">Full Name *</label>
+            <input type="text" id="auth-name-input" class="tg-input" placeholder="e.g. Rahul Sharma" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Email Address *</label>
+            <input type="email" id="auth-email-input" class="tg-input" placeholder="user@travelgo.in" value="user@travelgo.in" required />
+          </div>
+          <div class="tg-form-group" id="auth-group-phone" style="display: none;">
+            <label class="tg-form-label">Mobile Number</label>
+            <input type="tel" id="auth-phone-input" class="tg-input" placeholder="+91 98765 43210" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Password *</label>
+            <input type="password" id="auth-password-input" class="tg-input" placeholder="••••••••" value="user123" required />
+          </div>
+
+          <button type="submit" id="btn-submit-auth" class="tg-btn tg-btn-primary tg-btn-block" style="margin-top: 6px;">
+            Log In with Password
+          </button>
+        </form>
+
+        <div class="tg-divider-text" style="margin: 16px 0;">QUICK 1-CLICK DEMO</div>
+
+        <div style="display: flex; gap: 10px; flex-direction: column;">
+          <button type="button" id="btn-demo-user-login" class="tg-btn tg-btn-secondary tg-btn-block" style="font-size: 0.85rem; justify-content: center;">
+            ⚡ Quick Demo Login (Traveler: user@travelgo.in)
+          </button>
+          <a href="admin-login.html" class="tg-btn tg-btn-outline tg-btn-block" style="font-size: 0.85rem; justify-content: center; text-decoration: none; border-color: rgba(20, 184, 166, 0.4); color: var(--teal-300);">
+            🛡️ Switch to Admin Portal &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- "My Trips" Slide-out Drawer -->
+  <div class="tg-drawer-overlay" id="trips-drawer-overlay"></div>
+  <aside class="tg-drawer" id="trips-drawer" aria-label="My Trips Drawer">
+    <div class="tg-drawer-header">
+      <h3>🧳 My Booked Trips</h3>
+      <button type="button" class="tg-modal-close-btn" id="btn-close-trips-drawer" style="position: static;" aria-label="Close">&times;</button>
+    </div>
+    <div class="tg-drawer-body" id="trips-drawer-content">
+      <!-- Populated by js/app.js -->
+    </div>
+  </aside>
+
+  <!-- "Wishlist" Slide-out Drawer -->
+  <div class="tg-drawer-overlay" id="wishlist-drawer-overlay"></div>
+  <aside class="tg-drawer" id="wishlist-drawer" aria-label="Wishlist Drawer">
+    <div class="tg-drawer-header">
+      <h3>❤️ Saved Getaways</h3>
+      <button type="button" class="tg-modal-close-btn" id="btn-close-wishlist-drawer" style="position: static;" aria-label="Close">&times;</button>
+    </div>
+    <div class="tg-drawer-body" id="wishlist-drawer-content">
+      <!-- Populated by js/app.js -->
+    </div>
+  </aside>
+
+  <!-- Main JavaScript Bootstrap -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

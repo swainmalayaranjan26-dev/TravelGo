@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TravelGo Admin Console — Operations & Content Management</title>
+  <meta name="description" content="Unified operational command center for TravelGo platform: manage bookings, destinations, cabs, trains, hotels, and coupons." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+
+  <!-- STRICT SECURITY GATE: Block direct access to Admin Console without authentication -->
+  <script>
+    (function() {
+      try {
+        const raw = sessionStorage.getItem("travelgo_admin_session");
+        if (!raw) {
+          window.location.replace("admin-login.html");
+          return;
+        }
+        const admin = JSON.parse(raw);
+        if (!admin || (admin.role !== "ADMIN" && admin.email !== "rahul777@swain.com" && admin.email !== "admin@example.com")) {
+          sessionStorage.removeItem("travelgo_admin_session");
+          localStorage.removeItem("travelgo_admin_session");
+          window.location.replace("admin-login.html");
+          return;
+        }
+      } catch (err) {
+        sessionStorage.removeItem("travelgo_admin_session");
+        localStorage.removeItem("travelgo_admin_session");
+        window.location.replace("admin-login.html");
+      }
+    })();
+  </script>
+</head>
+<body class="tg-admin-body">
+
+  <!-- ==========================================================================
+       SIDEBAR NAVIGATION
+       ========================================================================== -->
+  <aside class="tg-admin-sidebar" id="admin-sidebar">
+    <div class="tg-admin-brand">
+      <a href="admin.html" class="tg-admin-logo">
+        <span>✈️</span> TravelGo <span>Console</span>
+      </a>
+      <span class="tg-admin-badge-role">Admin</span>
+    </div>
+
+    <nav class="tg-admin-nav">
+      <div class="tg-nav-section-title">Overview</div>
+      <a class="tg-admin-nav-item active" data-view="dashboard">
+        <span class="tg-admin-nav-icon">📊</span>
+        <span>Dashboard</span>
+      </a>
+      <a class="tg-admin-nav-item" data-view="bookings">
+        <span class="tg-admin-nav-icon">🧳</span>
+        <span>Bookings</span>
+        <span class="tg-nav-counter" id="nav-badge-bookings">0</span>
+      </a>
+
+      <div class="tg-nav-section-title">Catalog & Inventory</div>
+      <a class="tg-admin-nav-item" data-view="destinations">
+        <span class="tg-admin-nav-icon">🌄</span>
+        <span>Destinations</span>
+        <span class="tg-nav-counter" id="nav-badge-dests">0</span>
+      </a>
+      <a class="tg-admin-nav-item" data-view="cabs">
+        <span class="tg-admin-nav-icon">🚖</span>
+        <span>Cabs & Fleet</span>
+        <span class="tg-nav-counter" id="nav-badge-cabs">0</span>
+      </a>
+      <a class="tg-admin-nav-item" data-view="trains">
+        <span class="tg-admin-nav-icon">🚆</span>
+        <span>Trains & Routes</span>
+        <span class="tg-nav-counter" id="nav-badge-trains">0</span>
+      </a>
+      <a class="tg-admin-nav-item" data-view="hotels">
+        <span class="tg-admin-nav-icon">🏨</span>
+        <span>Hotels & Resorts</span>
+        <span class="tg-nav-counter" id="nav-badge-hotels">0</span>
+      </a>
+
+      <div class="tg-nav-section-title">Marketing & Users</div>
+      <a class="tg-admin-nav-item" data-view="coupons">
+        <span class="tg-admin-nav-icon">🎟️</span>
+        <span>Promo Coupons</span>
+        <span class="tg-nav-counter" id="nav-badge-coupons">0</span>
+      </a>
+      <a class="tg-admin-nav-item" data-view="customers">
+        <span class="tg-admin-nav-icon">👥</span>
+        <span>Customers</span>
+        <span class="tg-nav-counter" id="nav-badge-customers">0</span>
+      </a>
+
+      <div class="tg-nav-section-title">Platform</div>
+      <a class="tg-admin-nav-item" data-view="settings">
+        <span class="tg-admin-nav-icon">⚙️</span>
+        <span>System Settings</span>
+      </a>
+      <a class="tg-admin-nav-item tg-admin-nav-logout btn-admin-logout-trigger" id="nav-btn-admin-logout" role="button" tabindex="0" title="Sign out of Operations Console">
+        <span class="tg-admin-nav-icon">🚪</span>
+        <span>Admin Logout</span>
+      </a>
+    </nav>
+
+    <div class="tg-admin-sidebar-footer">
+      <a href="index.html" class="tg-btn-view-site" title="Return to customer facing website">
+        <span>⬅</span> Back to Live Site
+      </a>
+      <button type="button" class="tg-btn-admin-danger btn-admin-logout-trigger" id="btn-admin-logout" style="width: 100%; justify-content: center; padding: 8px 12px; font-size: 0.82rem; cursor: pointer;">
+        🚪 Sign Out Admin
+      </button>
+    </div>
+  </aside>
+
+  <!-- ==========================================================================
+       MAIN CONTENT CONTAINER
+       ========================================================================== -->
+  <main class="tg-admin-main">
+    <!-- Topbar -->
+    <header class="tg-admin-topbar">
+      <div class="tg-topbar-left">
+        <button type="button" class="tg-mobile-sidebar-toggle" id="btn-mobile-sidebar" aria-label="Toggle menu">☰</button>
+        <div class="tg-admin-breadcrumb">
+          <span>TravelGo Operations</span> / <strong id="topbar-current-view-title">Dashboard Overview</strong>
+        </div>
+      </div>
+
+      <div class="tg-topbar-right">
+        <div class="tg-topbar-clock" id="topbar-clock">
+          <span>🕒</span> <span id="clock-display">Loading...</span>
+        </div>
+
+        <div class="tg-admin-status-pill" id="db-status-pill" title="Connected to Neon PostgreSQL Cloud">
+          <span class="tg-live-dot"></span>
+          <span id="db-status-text">Neon PG 18.6 (Cloud)</span>
+        </div>
+
+        <div class="tg-admin-profile">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Admin" class="tg-admin-avatar" />
+          <div class="tg-admin-profile-info">
+            <span class="tg-admin-profile-name">Operations Lead</span>
+            <span class="tg-admin-profile-role">Super Admin</span>
+          </div>
+          <button type="button" class="tg-btn-topbar-logout btn-admin-logout-trigger" id="btn-topbar-logout" title="Sign Out of Operations Console">
+            <span>🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Admin Content Views -->
+    <div class="tg-admin-content">
+
+      <!-- ====================================================================
+           1. DASHBOARD VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view active" id="view-dashboard">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Command Center Overview</h1>
+            <p class="tg-view-subtitle">Live analytics across bookings, passenger revenue, fleet capacity, and catalog availability.</p>
+          </div>
+          <div class="tg-view-actions">
+            <button class="tg-btn-admin-secondary" id="btn-quick-export-top">
+              <span>📥</span> Export Backup
+            </button>
+            <button class="tg-btn-admin-primary" id="btn-quick-new-dest">
+              <span>+</span> Add Destination
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="tg-kpi-grid">
+          <div class="tg-kpi-card emerald">
+            <div class="tg-kpi-top">
+              <span class="tg-kpi-label">Total Revenue</span>
+              <div class="tg-kpi-icon">💰</div>
+            </div>
+            <div class="tg-kpi-value" id="kpi-total-revenue">₹0</div>
+            <div class="tg-kpi-sub">
+              <span class="tg-kpi-badge-inc">↑ 18.4%</span> vs last calendar month
+            </div>
+          </div>
+
+          <div class="tg-kpi-card">
+            <div class="tg-kpi-top">
+              <span class="tg-kpi-label">Total Bookings</span>
+              <div class="tg-kpi-icon">🧳</div>
+            </div>
+            <div class="tg-kpi-value" id="kpi-total-bookings">0</div>
+            <div class="tg-kpi-sub" id="kpi-confirmed-ratio">0 Confirmed</div>
+          </div>
+
+          <div class="tg-kpi-card coral">
+            <div class="tg-kpi-top">
+              <span class="tg-kpi-label">Active Fleet & Routes</span>
+              <div class="tg-kpi-icon">🚖</div>
+            </div>
+            <div class="tg-kpi-value" id="kpi-total-fleet">0</div>
+            <div class="tg-kpi-sub">Cabs, Vande Bharat & Trains</div>
+          </div>
+
+          <div class="tg-kpi-card purple">
+            <div class="tg-kpi-top">
+              <span class="tg-kpi-label">Destinations & Hotels</span>
+              <div class="tg-kpi-icon">🌄</div>
+            </div>
+            <div class="tg-kpi-value" id="kpi-total-places">0</div>
+            <div class="tg-kpi-sub">Published catalog items</div>
+          </div>
+        </div>
+
+        <!-- Split Grid: Analytics & Quick Actions -->
+        <div class="tg-dash-split-grid">
+          <div class="tg-dash-panel">
+            <div class="tg-panel-header">
+              <h3 class="tg-panel-title">Revenue Distribution by Vertical</h3>
+              <span style="font-size: 0.8rem; color: var(--text-dim);">Live gross booking value</span>
+            </div>
+            <div class="tg-revenue-breakdown">
+              <div class="tg-rev-item">
+                <div class="tg-rev-top">
+                  <span class="tg-rev-title">🚖 Outstation & Intercity Cabs</span>
+                  <span class="tg-rev-amount" id="rev-amt-cabs">₹0</span>
+                </div>
+                <div class="tg-rev-bar-track">
+                  <div class="tg-rev-bar-fill cabs" id="rev-bar-cabs" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="tg-rev-item">
+                <div class="tg-rev-top">
+                  <span class="tg-rev-title">🚆 Express & Vande Bharat Trains</span>
+                  <span class="tg-rev-amount" id="rev-amt-trains">₹0</span>
+                </div>
+                <div class="tg-rev-bar-track">
+                  <div class="tg-rev-bar-fill trains" id="rev-bar-trains" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="tg-rev-item">
+                <div class="tg-rev-top">
+                  <span class="tg-rev-title">🏨 Luxury Stays & Heritage Resorts</span>
+                  <span class="tg-rev-amount" id="rev-amt-hotels">₹0</span>
+                </div>
+                <div class="tg-rev-bar-track">
+                  <div class="tg-rev-bar-fill hotels" id="rev-bar-hotels" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="tg-rev-item">
+                <div class="tg-rev-top">
+                  <span class="tg-rev-title">🎒 Curated Tour Packages</span>
+                  <span class="tg-rev-amount" id="rev-amt-tours">₹0</span>
+                </div>
+                <div class="tg-rev-bar-track">
+                  <div class="tg-rev-bar-fill tours" id="rev-bar-tours" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tg-dash-panel">
+            <div class="tg-panel-header">
+              <h3 class="tg-panel-title">Quick Operational Actions</h3>
+            </div>
+            <div class="tg-quick-actions-grid">
+              <button class="tg-quick-action-btn" id="qa-add-dest">
+                <span class="tg-quick-action-icon">🌄</span>
+                <span class="tg-quick-action-title">New Destination</span>
+                <span class="tg-quick-action-desc">Add Indian getaway</span>
+              </button>
+              <button class="tg-quick-action-btn" id="qa-add-hotel">
+                <span class="tg-quick-action-icon">🏨</span>
+                <span class="tg-quick-action-title">Add Hotel/Resort</span>
+                <span class="tg-quick-action-desc">Luxury room listing</span>
+              </button>
+              <button class="tg-quick-action-btn" id="qa-add-coupon">
+                <span class="tg-quick-action-icon">🎟️</span>
+                <span class="tg-quick-action-title">Create Promo</span>
+                <span class="tg-quick-action-desc">Discount coupon code</span>
+              </button>
+              <button class="tg-quick-action-btn" id="qa-system-settings">
+                <span class="tg-quick-action-icon">📢</span>
+                <span class="tg-quick-action-title">Sale Banner</span>
+                <span class="tg-quick-action-desc">Configure top alert</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Bookings Snapshot -->
+        <div class="tg-table-container">
+          <div class="tg-table-toolbar">
+            <h3 class="tg-panel-title">Recent Travel Bookings</h3>
+            <button class="tg-btn-admin-secondary" id="btn-goto-all-bookings">
+              View All Bookings &rarr;
+            </button>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="tg-data-table" id="table-dash-bookings">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Type</th>
+                  <th>Trip / Service</th>
+                  <th>Travel Date</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Quick Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           2. BOOKINGS MANAGEMENT VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view" id="view-bookings">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Bookings Operations</h1>
+            <p class="tg-view-subtitle">Inspect customer itineraries, change reservation statuses, issue refunds, or cancel bookings.</p>
+          </div>
+          <div class="tg-view-actions">
+            <button class="tg-btn-admin-primary" id="btn-new-custom-booking">
+              <span>+</span> Create Manual Booking
+            </button>
+          </div>
+        </div>
+
+        <div class="tg-table-container">
+          <div class="tg-table-toolbar">
+            <div class="tg-table-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="search-bookings" placeholder="Search by ID, route, passenger, PNR..." />
+            </div>
+
+            <div class="tg-table-filters">
+              <select class="tg-filter-select" id="filter-booking-type">
+                <option value="ALL">All Travel Verticals</option>
+                <option value="CAB">Cabs Only</option>
+                <option value="TRAIN">Trains Only</option>
+                <option value="HOTEL">Hotels Only</option>
+                <option value="TOUR">Tour Packages Only</option>
+              </select>
+
+              <select class="tg-filter-select" id="filter-booking-status">
+                <option value="ALL">All Statuses</option>
+                <option value="CONFIRMED">CONFIRMED</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="CANCELLED">CANCELLED</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="tg-data-table" id="table-full-bookings">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Vertical</th>
+                  <th>Service Details</th>
+                  <th>Customer Info</th>
+                  <th>Travel Date & Time</th>
+                  <th>Total Amount</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-bookings">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           3. DESTINATIONS CATALOG VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view" id="view-destinations">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Destinations Catalog</h1>
+            <p class="tg-view-subtitle">Manage Indian travel destinations, itineraries, starting pricing, hero photography, and feature badges.</p>
+          </div>
+          <div class="tg-view-actions">
+            <button class="tg-btn-admin-primary" id="btn-open-add-dest-modal">
+              <span>+</span> Add Destination
+            </button>
+          </div>
+        </div>
+
+        <div class="tg-table-container">
+          <div class="tg-table-toolbar">
+            <div class="tg-table-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="search-destinations" placeholder="Search destination by name, state, category..." />
+            </div>
+
+            <div class="tg-table-filters">
+              <select class="tg-filter-select" id="filter-dest-category">
+                <option value="ALL">All Categories</option>
+                <option value="beach">Beaches</option>
+                <option value="hill-station">Hill Stations</option>
+                <option value="heritage">Heritage & Palaces</option>
+                <option value="nature">Nature & Backwaters</option>
+                <option value="spiritual">Spiritual</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="tg-data-table" id="table-destinations">
+              <thead>
+                <tr>
+                  <th>Destination</th>
+                  <th>Category & State</th>
+                  <th>Starting Price</th>
+                  <th>Duration</th>
+                  <th>Rating</th>
+                  <th>Badge</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-destinations">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           4. CABS & FLEET VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view" id="view-cabs">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Cabs & Fleet Operations</h1>
+            <p class="tg-view-subtitle">Configure vehicle tiers, base rates, distance tariffs, chauffeur allowances, and fleet availability.</p>
+          </div>
+          <div class="tg-view-actions">
+            <button class="tg-btn-admin-primary" id="btn-open-add-cab-modal">
+              <span>+</span> Add Vehicle Tier
+            </button>
+          </div>
+        </div>
+
+        <div class="tg-table-container">
+          <div style="overflow-x: auto;">
+            <table class="tg-data-table" id="table-cabs">
+              <thead>
+                <tr>
+                  <th>Vehicle Tier</th>
+                  <th>Popular Models</th>
+                  <th>Seating & AC</th>
+                  <th>Base Rate (Included Km)</th>
+                  <th>Rate / Km</th>
+                  <th>Driver Allowance</th>
+                  <th>Badge</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-cabs">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           5. TRAINS & SCHEDULES VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view" id="view-trains">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Trains & Rail Services</h1>
+            <p class="tg-view-subtitle">Manage Vande Bharat, Rajdhani, Shatabdi schedules, coach class fares, and live seat quotas.</p>
+          </div>
+          <div class="tg-view-actions">
+            <button class="tg-btn-admin-primary" id="btn-open-add-train-modal">
+              <span>+</span> Add Train Service
+            </button>
+          </div>
+        </div>
+
+        <div class="tg-table-container">
+          <div class="tg-table-toolbar">
+            <div class="tg-table-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="search-trains" placeholder="Search train by number, name, station..." />
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="tg-data-table" id="table-trains">
+              <thead>
+                <tr>
+                  <th>Train Number & Name</th>
+                  <th>Type</th>
+                  <th>Route (Origin ➔ Destination)</th>
+                  <th>Timings & Duration</th>
+                  <th>Classes & Fares</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-trains">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           6. HOTELS & RESORTS VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view" id="view-hotels">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Hotels & Luxury Resorts</h1>
+            <p class="tg-view-subtitle">Manage partnered accommodations, star classifications, starting rates, room categories, and amenities.</p>
+          </div>
+          <div class="tg-view-actions">
+            <button class="tg-btn-admin-primary" id="btn-open-add-hotel-modal">
+              <span>+</span> Add Hotel / Resort
+            </button>
+          </div>
+        </div>
+
+        <div class="tg-table-container">
+          <div class="tg-table-toolbar">
+            <div class="tg-table-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="search-hotels" placeholder="Search hotel by name, location, destination..." />
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="tg-data-table" id="table-hotels">
+              <thead>
+                <tr>
+                  <th>Property Name</th>
+                  <th>Location</th>
+                  <th>Star Category</th>
+                  <th>Rating</th>
+                  <th>Nightly Rate</th>
+                  <th>Rooms Available</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-hotels">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           7. PROMO COUPONS VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view" id="view-coupons">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Promo Codes & Discounts</h1>
+            <p class="tg-view-subtitle">Create seasonal promotional vouchers, percentage & flat discounts, minimum order thresholds, and expiry rules.</p>
+          </div>
+          <div class="tg-view-actions">
+            <button class="tg-btn-admin-primary" id="btn-open-add-coupon-modal">
+              <span>+</span> Create Promo Code
+            </button>
+          </div>
+        </div>
+
+        <div class="tg-table-container">
+          <div style="overflow-x: auto;">
+            <table class="tg-data-table" id="table-coupons">
+              <thead>
+                <tr>
+                  <th>Coupon Code</th>
+                  <th>Offer Description</th>
+                  <th>Discount Value</th>
+                  <th>Minimum Booking</th>
+                  <th>Expiry Date</th>
+                  <th>Redemptions</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-coupons">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           8. CUSTOMERS & USERS VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view" id="view-customers">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Customer & User Directory</h1>
+            <p class="tg-view-subtitle">View traveler profiles, tier classifications, lifetime booking value, and communication contacts.</p>
+          </div>
+          <div class="tg-view-actions">
+            <button class="tg-btn-admin-primary" id="btn-open-add-customer-modal">
+              <span>+</span> Add Traveler Profile
+            </button>
+          </div>
+        </div>
+
+        <div class="tg-table-container">
+          <div class="tg-table-toolbar">
+            <div class="tg-table-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="search-customers" placeholder="Search customer by name, email, phone, city..." />
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="tg-data-table" id="table-customers">
+              <thead>
+                <tr>
+                  <th>Customer Name</th>
+                  <th>Contact Information</th>
+                  <th>City</th>
+                  <th>Account Role</th>
+                  <th>Trips Booked</th>
+                  <th>Total Spent</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-customers">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           9. SYSTEM & BANNER SETTINGS VIEW
+           ==================================================================== -->
+      <section class="tg-admin-view" id="view-settings">
+        <div class="tg-view-header">
+          <div>
+            <h1 class="tg-view-title">Platform & Banner Settings</h1>
+            <p class="tg-view-subtitle">Configure global platform announcements, database backup JSON exports, imports, and system preferences.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 24px; max-width: 900px;">
+          <!-- Announcement Banner Settings -->
+          <div class="tg-dash-panel">
+            <h3 class="tg-panel-title" style="margin-bottom: 16px;">📢 Top Announcement Banner (Live Customer Site)</h3>
+            
+            <div class="tg-toggle-wrapper" style="margin-bottom: 20px;">
+              <div class="tg-toggle-info">
+                <h4>Enable Live Announcement Banner</h4>
+                <p>Displays an attention-grabbing banner across the very top of the customer homepage.</p>
+              </div>
+              <label class="tg-switch">
+                <input type="checkbox" id="setting-banner-enabled" />
+                <span class="tg-slider"></span>
+              </label>
+            </div>
+
+            <div class="tg-form-group" style="margin-bottom: 16px;">
+              <label class="tg-form-label">Banner Text / Headline</label>
+              <input type="text" class="tg-form-input" id="setting-banner-text" placeholder="e.g. 🎉 Festive Sale: 20% OFF on Cabs & Resorts" />
+            </div>
+
+            <div class="tg-form-group" style="margin-bottom: 20px;">
+              <label class="tg-form-label">Call-to-Action Link Destination</label>
+              <input type="text" class="tg-form-input" id="setting-banner-link" placeholder="#destinations-section" />
+            </div>
+
+            <button class="tg-btn-admin-primary" id="btn-save-banner-settings">
+              Save Banner Settings
+            </button>
+          </div>
+
+          <!-- General System Settings -->
+          <div class="tg-dash-panel">
+            <h3 class="tg-panel-title" style="margin-bottom: 16px;">⚙️ Platform Information</h3>
+            <div class="tg-form-grid">
+              <div class="tg-form-group">
+                <label class="tg-form-label">Platform Name</label>
+                <input type="text" class="tg-form-input" id="setting-platform-name" value="TravelGo India" />
+              </div>
+              <div class="tg-form-group">
+                <label class="tg-form-label">Support Email</label>
+                <input type="email" class="tg-form-input" id="setting-support-email" value="support@travelgo.in" />
+              </div>
+              <div class="tg-form-group">
+                <label class="tg-form-label">Helpline Number</label>
+                <input type="text" class="tg-form-input" id="setting-support-phone" value="+91 1800-419-8900" />
+              </div>
+              <div class="tg-form-group">
+                <label class="tg-form-label">GST Rate (%)</label>
+                <input type="number" class="tg-form-input" id="setting-gst-rate" value="5" />
+              </div>
+            </div>
+            <div style="margin-top: 20px;">
+              <button class="tg-btn-admin-primary" id="btn-save-platform-settings">
+                Update Platform Info
+              </button>
+            </div>
+          </div>
+
+          <!-- Neon PostgreSQL Cloud Database Status -->
+          <div class="tg-dash-panel" style="border-color: rgba(20, 184, 166, 0.35);">
+            <div class="tg-panel-header">
+              <h3 class="tg-panel-title">🐘 Neon PostgreSQL Cloud Database</h3>
+              <span class="tg-status-tag active" id="db-card-badge">CONNECTED</span>
+            </div>
+            <div class="tg-form-grid">
+              <div class="col-span-2">
+                <span class="tg-form-label">Database Host</span>
+                <p style="font-family: monospace; font-size: 0.85rem; color: var(--primary-teal); word-break: break-all;">
+                  ep-spring-violet-b3p59pyl-pooler.c-4.ap-southeast-1.aws.neon.tech
+                </p>
+              </div>
+              <div>
+                <span class="tg-form-label">Database Name / User</span>
+                <p style="font-family: monospace; font-size: 0.85rem; color: var(--text-main);">
+                  neondb (neondb_owner)
+                </p>
+              </div>
+              <div>
+                <span class="tg-form-label">Engine Version</span>
+                <p style="font-size: 0.85rem; color: var(--text-main);" id="db-version-display">
+                  PostgreSQL 18.6 (Cloud Pooler)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Backup & Reset Safety Center -->
+          <div class="tg-dash-panel" style="border-color: rgba(239, 68, 68, 0.25);">
+            <h3 class="tg-panel-title" style="margin-bottom: 8px;">💾 Database Backup, Restore & Reset</h3>
+            <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 20px;">
+              Export the complete application database (destinations, cabs, trains, hotels, bookings, coupons) to a JSON file, or restore an earlier backup.
+            </p>
+
+            <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+              <button class="tg-btn-admin-secondary" id="btn-export-full-db">
+                <span>📥</span> Export Backup (JSON)
+              </button>
+
+              <label class="tg-btn-admin-secondary" style="cursor: pointer;">
+                <span>📤</span> Restore from JSON
+                <input type="file" id="input-import-db" accept=".json" style="display: none;" />
+              </label>
+
+              <button class="tg-btn-admin-danger" id="btn-reset-factory-defaults">
+                <span>⚠️</span> Reset to Factory Defaults
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+
+  <!-- 1. Destination Modal (Add/Edit) -->
+  <div class="tg-admin-modal-overlay" id="modal-dest-overlay">
+    <div class="tg-admin-modal">
+      <div class="tg-admin-modal-header">
+        <h3 class="tg-admin-modal-title" id="modal-dest-title">Add New Destination</h3>
+        <button type="button" class="tg-admin-modal-close" data-close-modal>&times;</button>
+      </div>
+      <form id="form-dest" class="tg-admin-modal-body">
+        <input type="hidden" id="dest-id" />
+        <div class="tg-form-grid">
+          <div class="tg-form-group">
+            <label class="tg-form-label">Destination Name *</label>
+            <input type="text" class="tg-form-input" id="dest-name" required placeholder="e.g. Darjeeling" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">State *</label>
+            <input type="text" class="tg-form-input" id="dest-state" required placeholder="e.g. West Bengal" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Category *</label>
+            <select class="tg-form-select" id="dest-category" required>
+              <option value="hill-station">Hill Station</option>
+              <option value="beach">Beach</option>
+              <option value="heritage">Heritage & Palaces</option>
+              <option value="nature">Nature & Backwaters</option>
+              <option value="spiritual">Spiritual</option>
+            </select>
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Starting Price (₹) *</label>
+            <input type="number" class="tg-form-input" id="dest-price" required placeholder="e.g. 5499" />
+          </div>
+          <div class="tg-form-group col-span-2">
+            <label class="tg-form-label">Catchy Tagline *</label>
+            <input type="text" class="tg-form-input" id="dest-tagline" required placeholder="e.g. Queen of the Hills & Tea Gardens" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Duration</label>
+            <input type="text" class="tg-form-input" id="dest-duration" placeholder="e.g. 4 Days / 3 Nights" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Badge</label>
+            <input type="text" class="tg-form-input" id="dest-badge" placeholder="e.g. Trending, Bestseller" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Best Time To Visit</label>
+            <input type="text" class="tg-form-input" id="dest-best-time" placeholder="e.g. October to May" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Weather Info</label>
+            <input type="text" class="tg-form-input" id="dest-weather" placeholder="e.g. 14°C Crisp Alpine" />
+          </div>
+          <div class="tg-form-group col-span-2">
+            <label class="tg-form-label">Hero Cover Image URL *</label>
+            <input type="url" class="tg-form-input" id="dest-image" required placeholder="https://images.unsplash.com/..." />
+          </div>
+          <div class="tg-form-group col-span-2">
+            <label class="tg-form-label">Description</label>
+            <textarea class="tg-form-textarea" id="dest-description" placeholder="Write an engaging overview of this destination..."></textarea>
+          </div>
+        </div>
+      </form>
+      <div class="tg-admin-modal-footer">
+        <button type="button" class="tg-btn-admin-secondary" data-close-modal>Cancel</button>
+        <button type="submit" form="form-dest" class="tg-btn-admin-primary">Save Destination</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Cab Tier Modal (Add/Edit) -->
+  <div class="tg-admin-modal-overlay" id="modal-cab-overlay">
+    <div class="tg-admin-modal">
+      <div class="tg-admin-modal-header">
+        <h3 class="tg-admin-modal-title" id="modal-cab-title">Add Vehicle Tier</h3>
+        <button type="button" class="tg-admin-modal-close" data-close-modal>&times;</button>
+      </div>
+      <form id="form-cab" class="tg-admin-modal-body">
+        <input type="hidden" id="cab-id" />
+        <div class="tg-form-grid">
+          <div class="tg-form-group">
+            <label class="tg-form-label">Tier Category Name *</label>
+            <input type="text" class="tg-form-input" id="cab-category" required placeholder="e.g. Prime Sedan" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Vehicle Models *</label>
+            <input type="text" class="tg-form-input" id="cab-model" required placeholder="e.g. Maruti Dzire / Hyundai Aura" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Base Fare (₹) *</label>
+            <input type="number" class="tg-form-input" id="cab-base-fare" required placeholder="1299" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Rate Per Km (₹) *</label>
+            <input type="number" class="tg-form-input" id="cab-rate-km" required placeholder="14" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Driver Daily Allowance (₹)</label>
+            <input type="number" class="tg-form-input" id="cab-allowance" placeholder="350" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Seating Capacity</label>
+            <input type="text" class="tg-form-input" id="cab-capacity" placeholder="4 Seats + 3 Bags" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Badge</label>
+            <input type="text" class="tg-form-input" id="cab-badge" placeholder="Most Popular" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Average ETA (mins)</label>
+            <input type="number" class="tg-form-input" id="cab-eta" placeholder="6" />
+          </div>
+          <div class="tg-form-group col-span-2">
+            <label class="tg-form-label">Vehicle Image URL</label>
+            <input type="url" class="tg-form-input" id="cab-image" placeholder="https://images.unsplash.com/..." />
+          </div>
+        </div>
+      </form>
+      <div class="tg-admin-modal-footer">
+        <button type="button" class="tg-btn-admin-secondary" data-close-modal>Cancel</button>
+        <button type="submit" form="form-cab" class="tg-btn-admin-primary">Save Vehicle Tier</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Train Modal (Add/Edit) -->
+  <div class="tg-admin-modal-overlay" id="modal-train-overlay">
+    <div class="tg-admin-modal">
+      <div class="tg-admin-modal-header">
+        <h3 class="tg-admin-modal-title" id="modal-train-title">Add Train Service</h3>
+        <button type="button" class="tg-admin-modal-close" data-close-modal>&times;</button>
+      </div>
+      <form id="form-train" class="tg-admin-modal-body">
+        <input type="hidden" id="train-id" />
+        <div class="tg-form-grid">
+          <div class="tg-form-group">
+            <label class="tg-form-label">Train Number *</label>
+            <input type="text" class="tg-form-input" id="train-number" required placeholder="e.g. 22436" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Train Name *</label>
+            <input type="text" class="tg-form-input" id="train-name" required placeholder="Vande Bharat Express" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Type</label>
+            <input type="text" class="tg-form-input" id="train-type" placeholder="Semi-High Speed" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Duration</label>
+            <input type="text" class="tg-form-input" id="train-duration" placeholder="8h 00m" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Origin Station *</label>
+            <input type="text" class="tg-form-input" id="train-from" required placeholder="New Delhi (NDLS)" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Destination Station *</label>
+            <input type="text" class="tg-form-input" id="train-to" required placeholder="Varanasi Jn (BSB)" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Departure Time *</label>
+            <input type="text" class="tg-form-input" id="train-dep" required placeholder="06:00 AM" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Arrival Time *</label>
+            <input type="text" class="tg-form-input" id="train-arr" required placeholder="02:00 PM" />
+          </div>
+        </div>
+      </form>
+      <div class="tg-admin-modal-footer">
+        <button type="button" class="tg-btn-admin-secondary" data-close-modal>Cancel</button>
+        <button type="submit" form="form-train" class="tg-btn-admin-primary">Save Train</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Hotel Modal (Add/Edit) -->
+  <div class="tg-admin-modal-overlay" id="modal-hotel-overlay">
+    <div class="tg-admin-modal">
+      <div class="tg-admin-modal-header">
+        <h3 class="tg-admin-modal-title" id="modal-hotel-title">Add Hotel / Resort</h3>
+        <button type="button" class="tg-admin-modal-close" data-close-modal>&times;</button>
+      </div>
+      <form id="form-hotel" class="tg-admin-modal-body">
+        <input type="hidden" id="hotel-id" />
+        <div class="tg-form-grid">
+          <div class="tg-form-group col-span-2">
+            <label class="tg-form-label">Property Name *</label>
+            <input type="text" class="tg-form-input" id="hotel-name" required placeholder="e.g. Taj Exotica Resort & Spa" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Location (City, Area) *</label>
+            <input type="text" class="tg-form-input" id="hotel-loc" required placeholder="e.g. Benaulim, South Goa" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Category</label>
+            <select class="tg-form-select" id="hotel-category">
+              <option value="luxury">Luxury</option>
+              <option value="boutique">Boutique</option>
+              <option value="heritage">Heritage</option>
+              <option value="budget">Comfort & Budget</option>
+            </select>
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Star Rating (1-5)</label>
+            <input type="number" min="1" max="5" class="tg-form-input" id="hotel-stars" value="5" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Base Price / Night (₹) *</label>
+            <input type="number" class="tg-form-input" id="hotel-price" required placeholder="14500" />
+          </div>
+          <div class="tg-form-group col-span-2">
+            <label class="tg-form-label">Image URL *</label>
+            <input type="url" class="tg-form-input" id="hotel-image" required placeholder="https://images.unsplash.com/..." />
+          </div>
+        </div>
+      </form>
+      <div class="tg-admin-modal-footer">
+        <button type="button" class="tg-btn-admin-secondary" data-close-modal>Cancel</button>
+        <button type="submit" form="form-hotel" class="tg-btn-admin-primary">Save Hotel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Coupon Modal (Create/Edit) -->
+  <div class="tg-admin-modal-overlay" id="modal-coupon-overlay">
+    <div class="tg-admin-modal">
+      <div class="tg-admin-modal-header">
+        <h3 class="tg-admin-modal-title" id="modal-coupon-title">Create Promo Code</h3>
+        <button type="button" class="tg-admin-modal-close" data-close-modal>&times;</button>
+      </div>
+      <form id="form-coupon" class="tg-admin-modal-body">
+        <div class="tg-form-grid">
+          <div class="tg-form-group">
+            <label class="tg-form-label">Promo Code *</label>
+            <input type="text" class="tg-form-input" id="coupon-code" required placeholder="e.g. FESTIVE25" style="text-transform: uppercase;" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Discount Type</label>
+            <select class="tg-form-select" id="coupon-type">
+              <option value="percent">Percentage (%)</option>
+              <option value="flat">Flat Amount (₹)</option>
+            </select>
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Discount Value *</label>
+            <input type="number" class="tg-form-input" id="coupon-value" required placeholder="20" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Max Discount Cap (₹)</label>
+            <input type="number" class="tg-form-input" id="coupon-max" placeholder="1500" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Min Booking Amount (₹)</label>
+            <input type="number" class="tg-form-input" id="coupon-min-order" placeholder="2000" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Expiry Date</label>
+            <input type="date" class="tg-form-input" id="coupon-expiry" />
+          </div>
+          <div class="tg-form-group col-span-2">
+            <label class="tg-form-label">Offer Description</label>
+            <input type="text" class="tg-form-input" id="coupon-desc" placeholder="e.g. 20% festive discount on all outstation cabs & stays" />
+          </div>
+        </div>
+      </form>
+      <div class="tg-admin-modal-footer">
+        <button type="button" class="tg-btn-admin-secondary" data-close-modal>Cancel</button>
+        <button type="submit" form="form-coupon" class="tg-btn-admin-primary">Save Promo Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Booking Details & Status Modal -->
+  <div class="tg-admin-modal-overlay" id="modal-booking-overlay">
+    <div class="tg-admin-modal">
+      <div class="tg-admin-modal-header">
+        <h3 class="tg-admin-modal-title">Booking Details & Status</h3>
+        <button type="button" class="tg-admin-modal-close" data-close-modal>&times;</button>
+      </div>
+      <div class="tg-admin-modal-body" id="modal-booking-content">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="tg-admin-modal-footer">
+        <button type="button" class="tg-btn-admin-secondary" data-close-modal>Close</button>
+        <button type="button" class="tg-btn-admin-danger" id="btn-modal-cancel-booking">Cancel & Refund</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Customer Modal (Add/Edit) -->
+  <div class="tg-admin-modal-overlay" id="modal-customer-overlay">
+    <div class="tg-admin-modal">
+      <div class="tg-admin-modal-header">
+        <h3 class="tg-admin-modal-title" id="modal-customer-title">Add Traveler Profile</h3>
+        <button type="button" class="tg-admin-modal-close" data-close-modal>&times;</button>
+      </div>
+      <form id="form-customer" class="tg-admin-modal-body">
+        <input type="hidden" id="cust-id" />
+        <div class="tg-form-grid">
+          <div class="tg-form-group">
+            <label class="tg-form-label">Full Name *</label>
+            <input type="text" class="tg-form-input" id="cust-name" required placeholder="e.g. Rohan Sengupta" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Email Address *</label>
+            <input type="email" class="tg-form-input" id="cust-email" required placeholder="rohan@example.com" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Phone Number</label>
+            <input type="text" class="tg-form-input" id="cust-phone" placeholder="+91 98765 43210" />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">City</label>
+            <input type="text" class="tg-form-input" id="cust-city" placeholder="Mumbai" />
+          </div>
+          <div class="tg-form-group col-span-2">
+            <label class="tg-form-label">Role Classification</label>
+            <select class="tg-form-select" id="cust-role">
+              <option value="Customer">Standard Customer</option>
+              <option value="VIP Customer">VIP Explorer (Gold)</option>
+              <option value="Corporate Traveler">Corporate Traveler</option>
+              <option value="Manager">Operations Manager</option>
+            </select>
+          </div>
+        </div>
+      </form>
+      <div class="tg-admin-modal-footer">
+        <button type="button" class="tg-btn-admin-secondary" data-close-modal>Cancel</button>
+        <button type="submit" form="form-customer" class="tg-btn-admin-primary">Save Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       ADMIN AUTHENTICATION GATE (SECURITY OVERLAY)
+       ========================================================================== -->
+  <div id="admin-auth-gate" style="position: fixed; inset: 0; background: rgba(7, 11, 20, 0.94); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div class="tg-admin-modal" style="max-width: 440px; box-shadow: 0 32px 80px rgba(0,0,0,0.85); border-color: rgba(20,184,166,0.35);">
+      <div style="padding: 36px 28px; text-align: center;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(20,184,166,0.2), rgba(249,115,22,0.2)); border: 1px solid rgba(20,184,166,0.4); font-size: 2rem; margin-bottom: 16px;">
+          🛡️
+        </div>
+        <h2 style="font-family: var(--font-title); font-size: 1.45rem; color: var(--text-main); margin-bottom: 6px;">TravelGo Admin Console</h2>
+        <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 24px;">Restricted operations portal. Please verify administrator credentials.</p>
+
+        <!-- Error message -->
+        <div id="admin-gate-error" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #FCA5A5; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 18px; text-align: left;"></div>
+
+        <form id="form-admin-gate-login" style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
+          <div class="tg-form-group">
+            <label class="tg-form-label">Administrator Email</label>
+            <input type="email" id="gate-admin-email" class="tg-form-input" placeholder="rahul777@swain.com" value="rahul777@swain.com" required />
+          </div>
+          <div class="tg-form-group">
+            <label class="tg-form-label">Password</label>
+            <input type="password" id="gate-admin-password" class="tg-form-input" placeholder="••••••••" value="rahul12345" required />
+          </div>
+          <button type="submit" id="btn-submit-gate-login" class="tg-btn-admin-primary" style="justify-content: center; margin-top: 8px; padding: 12px; font-weight: 700;">
+            Authenticate & Open Console
+          </button>
+        </form>
+
+        <div class="tg-divider-text" style="margin: 20px 0;">QUICK 1-CLICK DEMO</div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button type="button" id="btn-gate-demo-login" class="tg-btn-admin-secondary" style="justify-content: center; font-size: 0.85rem; border-color: rgba(20,184,166,0.35); color: var(--primary-teal); font-weight: 600;">
+            ⚡ 1-Click Demo Admin (rahul777@swain.com / rahul12345)
+          </button>
+          <a href="index.html" style="font-size: 0.82rem; color: var(--text-dim); text-decoration: none; margin-top: 6px;">
+            ⬅ Return to Public Travel Site
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Controller JavaScript Module -->
+  <script type="module" src="js/admin.js?v=2.0.1"></script>
+</body>
+</html>
+
