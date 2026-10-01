@@ -1152,3 +1152,49 @@ input:checked + .tg-slider:before {
     padding: 20px 16px;
   }
 }
+
+@media (max-width: 768px) {
+  .tg-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .tg-stat-card {
+    padding: 16px;
+  }
+  .tg-admin-topbar {
+    flex-direction: column;
+    gap: 12px;
+    height: auto;
+    padding: 12px 16px;
+  }
+  .tg-topbar-search {
+    width: 100%;
+  }
+  .tg-topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .tg-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .tg-form-group.span-2, .tg-form-group.span-3 {
+    grid-column: span 1 !important;
+  }
+  .tg-data-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .tg-admin-logo {
+    font-size: 1.1rem;
+  }
+  .tg-admin-content {
+    padding: 15px 10px;
+  }
+  .tg-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}

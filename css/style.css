@@ -3077,3 +3077,104 @@ button, input, select, textarea {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.8); }
 }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (ALL DEVICES)
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .tg-search-row {
+    flex-wrap: wrap;
+  }
+  .tg-search-col {
+    flex: 1 1 45%;
+  }
+}
+
+@media (max-width: 991px) {
+  .tg-nav-links, .tg-header-auth-group {
+    display: none;
+  }
+  .tg-mobile-toggle {
+    display: flex;
+    margin-left: auto;
+  }
+  .tg-mobile-auth-wrapper.active {
+    display: flex;
+  }
+  .tg-hero-content {
+    max-width: 100%;
+    text-align: center;
+  }
+  .tg-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .tg-form-group.span-2 {
+    grid-column: span 1 !important;
+  }
+  .tg-search-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .tg-search-col, .tg-search-btn-col {
+    width: 100%;
+    flex: none;
+  }
+  .tg-btn-block {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .tg-section {
+    padding: 60px 0;
+  }
+  .tg-section-title {
+    font-size: 2.2rem;
+  }
+  .tg-hero-inner {
+    flex-direction: column;
+  }
+  .tg-features-grid, .tg-footer-grid, .tg-destinations-grid, .tg-packages-grid, .tg-grid-2, .tg-grid-3, .tg-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+  .tg-hero-auth-banner {
+    flex-direction: column;
+    padding: 15px;
+    text-align: center;
+  }
+  .tg-announcement-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  .tg-footer-top {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .tg-footer-nav-col {
+    width: 100%;
+  }
+  .tg-modal-content {
+    width: 95%;
+    margin: 20px auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .tg-section-title {
+    font-size: 1.8rem;
+  }
+  .tg-header {
+    height: 60px;
+  }
+  .tg-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+  .tg-card-body {
+    padding: 16px;
+  }
+}
